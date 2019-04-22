@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>菜单管理</title>
+    <#include "/header.html">
+    <link rel="stylesheet" href="${request.contextPath}/statics/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.css">
+    <script src="${request.contextPath}/statics/libs/bootstrap-table.min.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.min.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.bootstrap3.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.extension.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/tree.table.js"></script>
+    <style>
+        .right{
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <#if shiro.hasPermission("device:deviceinfo:register")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;注册</a>
+            </#if>
+            <#if shiro.hasPermission("device:devicedyninfo:kill")>
+            <a class="btn btn-primary" @click="kill"><i class="fa fa-ban"></i>&nbsp;毙杀</a>
+            </#if>
+            <#if shiro.hasPermission("device:deviceinfo:update")>
+            <a class="btn btn-primary" @click="report"><i class="fa fa-arrow-circle-right"></i>&nbsp;导出</a>
+            </#if>
+<!--<a class="btn btn-primary" @click="cout"><i class="fa fa-arrow-circle-right"></i>&nbsp;导出</a>-->
+    </div>
+    <table id="menuTable" data-mobile-responsive="true" data-click-to-select="true">
+        <thead>
+        <tr>
+            <th data-field="selectItem" data-checkbox="true"></th>
+        </tr>
+        </thead>
+    </table>
+    </div>
+<div v-show="!showList" class="panel panel-default">
+    <div class="panel-heading">{{title}}</div>
+    <form class="form-horizontal center-block" style="width:650px">
+        <div class="form-group">
+            <div class="col-sm-2 control-label">设备生产厂商名称</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" v-model="devicereginfo.issuername" placeholder="设备生产厂商名称"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">设备型号</div>
+            <div class="col-sm-10">
+                <select class="form-control" v-model="devicereginfo.devname">
+                    <option>请选择</option>
+                    <option v-for="devtypeinfo in devtypeinfos" :value="devtypeinfo.devname">
+                        {{devtypeinfo.devicename}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">设备编号</div>
+            <div class="col-sm-10">
+                <input id="in3" type="text" class="form-control" maxlength="16" v-model="devicereginfo.devserial"
+                       placeholder="设备编号(16位)"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">设备证书</div>
+            <div class="col-sm-10">
+                <input id="out0" type="text" readonly="readonly" class="form-control" v-model="devicereginfo.devcertificate" placeholder="设备证书"/>
+                <br>
+                <input type="button" class="btn btn-primary btn-block" @click="buildCertificate" value="导入设备证书"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">注册管理员身份证号</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" maxlength="18" v-model="devicereginfo.adminorid"
+                       placeholder="设备注册管理员身份证编号(18位)"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">设备管理员联系电话</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" maxlength="11" v-model="devicereginfo.adminorphone"
+                       placeholder="设备管理员联系电话"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">监管中心编号</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" maxlength="8" readonly="readonly"
+                       :value="devicereginfo.sysnumber" placeholder="监管中心编号(8位)"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">设备使用单位</div>
+            <div class="col-sm-10">
+                <select id="in1" class="form-control" v-model="devicereginfo.devdepartment">
+                    <option>请选择</option>
+                    <option v-for="devicedeptinfo in devicedeptinfos" :value="devicedeptinfo.devdepartment">
+                        {{devicedeptinfo.devdeptname}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label">设备唯一标识</div>
+            <div class="col-sm-10">
+                <input id="out1" type="text" readonly="readonly" v-model="devicereginfo.deviceid" class="form-control"
+                       maxlength="32" placeholder="设备唯一标识(32位)"/>
+                <br>
+                <input type="button" class="btn btn-primary btn-block" @click="mergeDevid" value="生成设备唯一标识"/>
+            </div>
+        </div>
+        <!--使用单位编号（4B）+设备型号（9B）+3B扩展位+设备编号（16B）-->
+        <div class="form-group">
+            <div class="col-sm-2 control-label">代理信息</div>
+            <label class="radio-inline">
+                <input id="radio1" type="radio" name="status" value="0" @click="inputAgentInfo" v-model="inputType"/> 注册新代理
+            </label>
+            <label class="radio-inline">
+                <input id="radio2" type="radio" name="status" value="1" @click="selectAgentInfo" v-model="inputType"/> 选择已有代理
+            </label>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">{{titleAgent}}</div>
+            <form class="form-horizontal center-block">
+                <div v-show="showAgent">
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">管理代理IP</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="agentinfo.agentip" placeholder="管理代理IP"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">管理代理端口号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="agentinfo.agentport" placeholder="7000"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">代理唯一标识</div>
+                        <div class="col-sm-10">
+                            <input id="out2" type="text" readonly="readonly" v-model="agentinfo.agentid" class="form-control"
+                                   maxlength="32" placeholder="代理唯一标识(32位)"/>
+                        </div>
+                    </div>
+                    <div v-show="showButton">
+                        <div class="form-group">
+                            <div class="col-sm-2 control-label"></div>
+                            <input type="button" class="btn btn-success" @click="mergeAgentid" value="生成代理唯一标识"/>
+                            &nbsp;&nbsp;<input type="button" class="btn btn-info" @click="registeAgent" value="提交代理信息"/>
+                            &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="back" value="取消"/>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="showSelect">
+                    <div class="form-group">
+                        <div class="col-sm-2 control-label">管理代理IP</div>
+                        <div class="col-sm-10">
+                            <select class="form-control" @change="selected" id="mySelect">
+                                <!-- 获取代理的信息列表 :key="agentinfo.recnumber"  v-model="agentinfo.recnumber"-->
+                                <option>请选择</option>
+                                <option v-for="aginfo in agentinfos" :value="aginfo.recnumber">
+                                    {{aginfo.agentip}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 control-label"> </div>
+                <input type="button" class="btn btn-info" @click="outputInfo" value="导出注册信息"/>
+                <div class="col-sm-6 right">
+                    <input type="button" class="btn btn-primary" @click="registeDev" value="注册密码设备"/>
+                    <!--&nbsp;&nbsp;<input type="button" class="btn btn-primary" @click="inputAgentInfo" value="填写代理信息"/>-->
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+                </div>
+
+        </div>
+    </form>
+</div>
+</div>
+
+
+
+<!-- 选择菜单 -->
+<div id="menuLayer" style="display: none;padding:10px;">
+    <ul id="menuTree" class="ztree"></ul>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/device/devicemanage.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/device/FileSaver.js?_${.now?long}"></script>
+</body>
+</html>

@@ -86,6 +86,17 @@ public class ShiroConfig {
         filterMap.put("/statics/**", "anon");
         filterMap.put("/login.html", "anon");
         filterMap.put("/sys/login", "anon");
+
+        filterMap.put("/device/deviceinfo/devlist","anon");
+        filterMap.put("/device/devicedyninfo/devdynlist","anon");
+
+        filterMap.put("/device/deviceinfo/queryonedev/**","anon");
+        filterMap.put("/device/devicedyninfo/queryonedevdyn/**","anon");
+        filterMap.put("/device/devicedyninfo/killReturn/**","anon");
+        filterMap.put("/sys/dept/registerReturn","anon");
+        filterMap.put("/dataManager/consumeSynchroData","anon");
+
+
         filterMap.put("/favicon.ico", "anon");
         filterMap.put("/captcha.jpg", "anon");
         filterMap.put("/**", "authc");

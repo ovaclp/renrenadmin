@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>监控系统注册</title>
+
+<#include "/header.html">
+</head>
+<body>
+
+<div id="rrapp" v-cloak>
+<div class="panel panel-default">
+	<div class="panel-heading">{{title}}</div>
+	<form class="form-horizontal center-block" style="width:650px">
+
+		<div class="form-group">
+			<div class="col-sm-2 control-label">本级监控中心地址</div>
+			<div class="col-sm-10">
+				<div data-toggle="distpicker">
+					<select class="form-control" id="province" v-model="dataprovince"></select>
+					<select class="form-control" id="city" v-model="datacity" @change="selected"></select>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label">使用单位名称</div>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" v-model="sysDept.deptUser" placeholder="使用单位名称"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label">本级监控中心名称</div>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" v-model="sysDept.name" placeholder="本级监控中心名称"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label">本级监控中心的IP地址</div>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" v-model="sysDept.ipAddr" placeholder="本级监控中心的IP地址"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label">代理向监控中心报数据的端口号</div>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" v-model="sysDept.agentPort" placeholder="代理向监控中心报数据的端口号"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label">上报策略</div>
+			<label class="radio-inline">
+				<input type="radio" name="sendStrategy" value="0" v-model="sysDept.sendStrategy"/> 最小集合
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="sendStrategy" value="1" v-model="sysDept.sendStrategy"/> 全部集合
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="sendStrategy" value="2" v-model="sysDept.sendStrategy"/> 自定义
+			</label>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label">毙杀策略</div>
+			<label class="radio-inline">
+				<input type="radio" name="killStrategy" value="0" v-model="sysDept.killStrategy"/> 自动
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="killStrategy" value="1" v-model="sysDept.killStrategy"/> 通知
+			</label>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2 control-label">本级监控中心所属域</div>
+			<div class="col-sm-10">
+				<select class="form-control" v-model="sysDept.deptDomainnum">
+					<option>请选择</option>
+					<option v-for="deptDomaininfo in deptDomainInfos" :value="deptDomaininfo.deptDomainnum">
+						{{deptDomaininfo.deptDomain}}
+					</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2 control-label">本级监控中心唯一标识</div>
+			<div class="col-sm-10">
+				<input id="out1" type="text" class="form-control" readonly="readonly" v-model="sysDept.centerId" placeholder="本级监控中心唯一标识"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label">是否顶级</div>
+			<label class="radio-inline">
+				<input type="radio" name="isTop" value="0" @click="isTop" v-model="top"/> 是
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="isTop" value="1" @click="isNotTop" v-model="top"/> 否
+			</label>
+		</div>
+		<div class="form-group" v-show="!isTopCenter">
+			<div class="col-sm-2 control-label">上级监控中心IP地址</div>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" v-model="sysDept.parentIp" placeholder="上级监控中心IP地址"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2 control-label"></div>
+			<input type="button" class="btn btn-primary" @click="mergeCenterId" value="生成中心唯一标识"/>
+			&nbsp;&nbsp;<input type="button" class="btn btn-primary" @click="save" value="注册"/>
+			&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="取消"/>
+		</div>
+	</form>
+</div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/sys/register.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/sys/distpicker.js?_${.now?long}"></script>
+</body>
+</html>

@@ -32,9 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -68,9 +66,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
 		);
 
 		for(SysRoleEntity sysRoleEntity : page.getRecords()){
-			SysDeptEntity sysDeptEntity = sysDeptService.selectById(sysRoleEntity.getDeptId());
-			if(sysDeptEntity != null){
-				sysRoleEntity.setDeptName(sysDeptEntity.getName());
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("dept_id", sysRoleEntity.getDeptId());
+			List<SysDeptEntity> list = sysDeptService.selectByMap(map);
+			if (list.size() == 1) {
+				sysRoleEntity.setDeptName(list.get(0).getName());
 			}
 		}
 

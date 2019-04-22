@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+		<#include "/header.html">
+    <style>
+        .form-grop{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <#if shiro.hasPermission("device:deviceinfo:mes")>
+            <a class="btn btn-primary" @click="refresh"><i class="fa fa-plus"></i>&nbsp;查询最新基本信息</a>
+            </#if>
+            <#if shiro.hasPermission("device:deviceinfo:info")>
+            <a class="btn btn-primary" @click="check"><i class="fa fa-search-plus"></i>&nbsp;查看详情</a>
+            </#if>
+            <#if shiro.hasPermission("device:deviceinfo:info")>
+            <a class="btn btn-primary" @click="outputInfo"><i class="fa fa-search-plus"></i>&nbsp;导出设备动态信息</a>
+            </#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <div class="panel-body">
+            <form class="form-horizontal form-grop">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">设备唯一标识</div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.deviceid" placeholder="设备唯一标识"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">	系统版本号</div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.deviceversion" placeholder="	系统版本号"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">管理协议版本号</div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.standardversion" placeholder="管理协议版本号"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">支持的非对称算法</div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.asymalgability0" placeholder="系统支持的非对称算法"/>
+                        </div>
+                    </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">非对称算法密钥长度</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.asymalgability1" placeholder="系统支持的非对称算法"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">支持的杂凑算法</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.hashalgability" placeholder="系统支持的杂凑算法"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">支持的对称算法</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.symalgability" placeholder="系统支持的对称算法"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">	设备IP地址</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.deviceipv4" placeholder="	设备IP地址"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备名称</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.devicename" placeholder="设备名称"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备编号/序列号</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.deviceserial" placeholder="设备编号/序列号"/>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备生产厂商名称</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.issuername" placeholder="设备生产厂商名称"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备型号</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.devicetype" placeholder="设备型号"/>
+                            </div>
+                        </div>
+                       <!-- <div class="form-group">
+                            <div class="col-sm-4 control-label">设备型号(9)</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.devname" placeholder="设备型号(9)"/>
+                            </div>
+                        </div>-->
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备证书</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.devcertificate" placeholder="设备证书"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备管理员身份证号</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.adminorid" placeholder="设备注册管理员身份证编号"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备管理员联系电话</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.adminorphone" placeholder="设备管理员联系电话"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">监管中心编号</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.sysnumber" placeholder="监管中心编号"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备使用单位编号</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.devdepartment" placeholder="设备使用单位编号"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">最大文件存储空间</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.buffersize" placeholder="支持的最大文件存储空间"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">注册日期</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly" v-model="deviceinfo.regdate" placeholder="注册日期"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="button" class="btn btn-primary btn-block" @click="reload" value="返回"/>
+                        </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/device/deviceinfo.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/device/FileSaver.js?_${.now?long}"></script>
+</body>
+</html>

@@ -40,6 +40,7 @@ var vm = new Vue({
 	data:{
 		user:{},
 		menuList:{},
+		dept:{},
 		main:"main.html",
 		password:'',
 		newPassword:'',
@@ -55,6 +56,11 @@ var vm = new Vue({
 			$.getJSON("sys/user/info?_"+$.now(), function(r){
 				vm.user = r.user;
 			});
+		},
+		getSystemInfo:function(){
+            $.getJSON("sys/dept/infoCurrent?_"+$.now(), function(r){
+                vm.dept = r.dept;
+            });
 		},
 		updatePassword: function(){
 			layer.open({
@@ -100,6 +106,7 @@ var vm = new Vue({
 	created: function(){
 		this.getMenuList();
 		this.getUser();
+		this.getSystemInfo();
 	},
 	updated: function(){
 		//路由

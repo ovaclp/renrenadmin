@@ -98,7 +98,7 @@ public class SysUserEntity implements Serializable {
 	 * 部门ID
 	 */
 	@NotNull(message="部门不能为空", groups = {AddGroup.class, UpdateGroup.class})
-	private Long deptId;
+	private String deptId;
 
 	/**
 	 * 部门名称
@@ -234,11 +234,11 @@ public class SysUserEntity implements Serializable {
 		this.salt = salt;
 	}
 
-	public Long getDeptId() {
+	public String getDeptId() {
 		return deptId;
 	}
 
-	public void setDeptId(Long deptId) {
+	public void setDeptId(String deptId) {
 		this.deptId = deptId;
 	}
 

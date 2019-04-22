@@ -45,16 +45,16 @@ public class SwaggerConfig{
             //加了ApiOperation注解的类，生成接口文档
             .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
             //包下的类，生成接口文档
-            //.apis(RequestHandlerSelectors.basePackage("io.renren.modules.job.controller"))
+            .apis(RequestHandlerSelectors.basePackage("io.renren.modules.device.controller"))
             .paths(PathSelectors.any())
             .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("人人开源")
-            .description("renren-admin文档")
-            .termsOfServiceUrl("http://www.renren.io")
+            .title("springboot利用swagger构建设备监管系统API文档")
+            .description("设备监管系统demo接口文档")
+            .termsOfServiceUrl("http://localhost:8080/renren-admin")
             .version("3.2.0")
             .build();
     }

@@ -39,7 +39,7 @@ public class SysRoleDeptServiceImpl extends ServiceImpl<SysRoleDeptDao, SysRoleD
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void saveOrUpdate(Long roleId, List<Long> deptIdList) {
+	public void saveOrUpdate(Long roleId, List<String> deptIdList) {
 		//先删除角色与部门关系
 		deleteBatch(new Long[]{roleId});
 
@@ -49,7 +49,7 @@ public class SysRoleDeptServiceImpl extends ServiceImpl<SysRoleDeptDao, SysRoleD
 
 		//保存角色与菜单关系
 		List<SysRoleDeptEntity> list = new ArrayList<>(deptIdList.size());
-		for(Long deptId : deptIdList){
+		for(String deptId : deptIdList){
 			SysRoleDeptEntity sysRoleDeptEntity = new SysRoleDeptEntity();
 			sysRoleDeptEntity.setDeptId(deptId);
 			sysRoleDeptEntity.setRoleId(roleId);
@@ -60,7 +60,7 @@ public class SysRoleDeptServiceImpl extends ServiceImpl<SysRoleDeptDao, SysRoleD
 	}
 
 	@Override
-	public List<Long> queryDeptIdList(Long[] roleIds) {
+	public List<String> queryDeptIdList(Long[] roleIds) {
 		return baseMapper.queryDeptIdList(roleIds);
 	}
 

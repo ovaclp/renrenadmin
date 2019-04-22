@@ -3,9 +3,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
     druid:
-      url: jdbc:mysql://localhost:3306/renren_security?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
-      username: renren
-      password: 123456
+      url: jdbc:mysql://127.0.0.1:3306/renren_security?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: mysqladmin
       initial-size: 10
       max-active: 100
       min-idle: 10

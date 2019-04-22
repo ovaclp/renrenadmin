@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <#include "/header.html">
+    <style>
+        .right{
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div class="panel panel-default">
+        <br>
+        <label class="inline">日志数据来源：</label>
+        &nbsp;&nbsp;
+        <label class="radio-inline">
+            <input id="radio1" type="radio" name="status" value="0" @click="centerData" v-model="searchType"/>
+            中心数据库
+        </label>
+        &nbsp;&nbsp;&nbsp;
+        <label class="radio-inline">
+            <input id="radio2" type="radio" name="status" value="1" @click="agentData" v-model="searchType"/>
+            设备查询
+        </label>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <label class="select2-search--inline right">
+            <label class="inline">设备唯一标识:</label>
+            &nbsp;&nbsp;
+            <select v-model="devid" >
+                <option :value="allInfo" id="option0">全部信息</option>
+                <option v-for="devInfo in devInfos" :value="devInfo.deviceid">
+                    {{devInfo.deviceid}}
+                </option>
+            </select>
+            &nbsp;&nbsp;
+            <#if shiro.hasPermission("device:deviceloginfo:loglist")>
+            <a class="btn btn-info inline" type="submit" @click="getLog">查询</a>
+            <!--<i class="fa fa-search-plus"></i>&nbsp;-->
+        </#if>
+        </label>
+
+    <br><br>
+    <div v-show="showList" class="panel panel-default">
+        <br>
+        <form style="min-width: 1000px;margin-bottom: 20px" class="form-inline">
+            <label>开始时间:</label>
+            <input class="form-control" type="datetime-local" step="01" v-model="dateStart" placeholder="开始时间"/>
+            <label>结束时间:</label>
+            <input class="form-control" type="datetime-local" step="01" v-model="dateEnd" placeholder="结束时间"/>
+        </form>
+    </div>
+</div>
+
+<!--<div class="grid-btn">-->
+<!--<#if shiro.hasPermission("device:deviceloginfo:save")>-->
+<!--<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>-->
+<!--</#if>-->
+<!--<#if shiro.hasPermission("device:deviceloginfo:update")>-->
+<!--<a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>-->
+<!--</#if>-->
+<!--<#if shiro.hasPermission("device:deviceloginfo:delete")>-->
+<!--<a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>-->
+<!--</#if>-->
+<!--</div>-->
+<table id="jqGrid"></table>
+<div id="jqGridPager"></div>
+</div>
+
+<!--<div v-show="!showList" class="panel panel-default">-->
+<!--<div class="panel-heading">{{title}}</div>-->
+<!--<form class="form-horizontal">-->
+<!--<div class="form-group">-->
+<!--<div class="col-sm-2 control-label">设备唯一标识</div>-->
+<!--<div class="col-sm-10">-->
+<!--<input type="text" class="form-control" v-model="deviceloginfo.devid" placeholder="设备唯一标识"/>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--<div class="col-sm-2 control-label">日志级别</div>-->
+<!--<div class="col-sm-10">-->
+<!--<input type="text" class="form-control" v-model="deviceloginfo.loglevel" placeholder="日志级别"/>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--<div class="col-sm-2 control-label">日志时间</div>-->
+<!--<div class="col-sm-10">-->
+<!--<input type="text" class="form-control" v-model="deviceloginfo.logtime" placeholder="日志时间"/>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--<div class="col-sm-2 control-label">日志内容</div>-->
+<!--<div class="col-sm-10">-->
+<!--<input type="text" class="form-control" v-model="deviceloginfo.logcontent" placeholder="日志内容"/>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--<div class="col-sm-2 control-label"></div>-->
+<!--<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>-->
+<!--&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>-->
+<!--</div>-->
+<!--</form>-->
+<!--</div>-->
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/device/deviceloginfo.js?_${.now?long}"></script>
+</body>
+</html>

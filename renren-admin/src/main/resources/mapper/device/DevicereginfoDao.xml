@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DevicereginfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.DevicereginfoEntity" id="devicereginfoMap">
+        <result property="recnumber" column="RecNumber"/>
+        <result property="devid" column="DevID"/>
+        <result property="issuername" column="IssuerName"/>
+        <result property="devname" column="DevName"/>
+        <result property="devserial" column="DevSerial"/>
+        <result property="devcertificate" column="DevCertificate"/>
+        <result property="adminorid" column="AdminorID"/>
+        <result property="adminorphone" column="AdminorPhone"/>
+        <result property="sysnumber" column="SysNumber"/>
+        <result property="devdepartment" column="DevDepartment"/>
+        <result property="regdate" column="RegDate"/>
+    </resultMap>
+
+
+</mapper>

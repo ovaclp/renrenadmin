@@ -1,37 +1,579 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>欢迎页</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="${request.contextPath}/statics/css/bootstrap.min.css">
+    <meta charset="utf-8"/>
+    <title>密码设备监管系统</title>
+    <#include "/header.html">
+    <link rel="stylesheet" href="${request.contextPath}/statics/css/base.css"/>
+    <!--<link rel="stylesheet" href="lib/bootstrap-3.3.7-dist/css/bootstrap.css"/>-->
+    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="${request.contextPath}/statics/css/zTreeStyle.css"/>
+    <!--<link rel="stylesheet" href="lib/jquery-nice-select/nice-select.css"/>-->
+    <link rel="stylesheet" href="${request.contextPath}/statics/css/common.css"/>
+    <link rel="stylesheet" href="${request.contextPath}/statics/css/index.css"/>
+    <style>
+        td {
+            padding: 0px;
+            height: 80px;
+            text-align: center;
+        }
+
+        p {
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* 在线  */
+        .seal-in {
+            background: #5cb85c;//5cb85c 009688
+        color: #fff;
+        }
+
+        /* 离线  */
+        .seal-out {
+            background: #f0ad4e;//f0ad4e 575757
+        color: #fff;
+        }
+
+        /* 毙杀  */
+        .seal-abnormal {
+            background: #d9534f;//d9534f FF5722
+        color: #fff;
+        }
+
+
+        /* 空  */
+        .seal-empty {
+            background: #cfcfcf;
+            color: #fff;
+        }
+
+        a .tooltiptext {
+            visibility: hidden; /* 默认隐藏 */
+            width: 280px;
+            /*top: 100%;*/ /* 下方显示 */
+            bottom: 100%; /* 上方显示 */
+            left: 50%;
+            margin-left: -140px; /* 使用一半宽度 (120/2 = 60) 来居中提示工具 */
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+
+            /* 定位 */
+            position: absolute;
+            z-index: 1;
+        }
+
+        a:hover .tooltiptext {
+            visibility: visible; /* 悬停显示 */
+        }
+
+        .form-grop {
+            width: 100%;
+        }
+    </style>
 </head>
-<body>
-<div class="panel panel-default">
-    <div class="panel-heading">基本信息</div>
-    <div style="padding: 10px 0 20px 10px;">
-        <h3>&nbsp;&nbsp;&nbsp;项目介绍</h3>
-        <ul>
-            <li>采用Spring、MyBatis、Shiro框架，开发的一套权限系统，极低门槛，拿来即用。</li>
-            <li>设计之初，就非常注重安全性，为企业系统保驾护航，让一切都变得如此简单。</li>
-            <li>提供了代码生成器，只需编写30%左右代码，其余的代码交给系统自动生成，可快速完成开发任务</li>
-            <li>推荐使用阿里云服务器部署项目，免费领取阿里云优惠券，请点击【<a href="https://promotion.aliyun.com/ntms/act/ambassador/sharetouser.html?userCode=y93lfwbg&amp;productCode=dmspre&amp;utm_source=y93lfwbg" target="_blank">免费领取</a>】</li>
-        </ul>
-
-        <h3>&nbsp;&nbsp;&nbsp;获取帮助</h3>
-        <ul>
-            <li>Git地址：<a href="https://gitee.com/renrenio/renren-security" target="_blank">https://gitee.com/renrenio/renren-security</a></li>
-            <li>官方社区：<a href="http://www.renren.io/?s=index/Community" target="_blank">http://www.renren.io/?s=index/Community</a></li>
-            <li>如需关注项目最新动态，请Watch、Star项目，同时也是对项目最好的支持</li>
-        </ul>
-
-        <h3>&nbsp;&nbsp;&nbsp;官方QQ群</h3>
-        <ul>
-            <li>高级群：324780204(大牛云集，跟大牛学习新技能)</li>
-            <li>普通群：145799952(学习交流，互相解答各种疑问)</li>
-        </ul>
+<body onload="appendTable();">
+<!-- 主显内容区 -->
+<div id="js-cont" class="cont cl">
+    <!-- 内容区  -->
+    <div id="rrapp" v-cloak>
+        <div v-show="showList">
+            <!-- 侧边栏  -->
+            <div id="js-side" class="side">
+                <!-- 树形结构  -->
+                <ul id="js-tree-structure" class="ztree">
+                </ul>
+            </div>
+            <div id="js-right-cont" class="right-cont">
+                <!-- 统计信息  -->
+                <div class="seal-sum-wrap">
+                    在线&nbsp;<span id="seal-in-sum" class="layui-badge seal-in" style="font-size: 16px;"></span>&nbsp;台，
+                    离线&nbsp;<span id="seal-out-sum" class="layui-badge seal-out" style="font-size: 16px;"></span>&nbsp;台，
+                    毙杀&nbsp;<span id="seal-abnormal-sum" class="layui-badge seal-abnormal" style="font-size: 16px;"></span>&nbsp;台
+                    <div class="r mr-10">
+                        <span class="layui-badge seal-in">在线</span>
+                        <span class="layui-badge seal-out">离线</span>
+                        <span class="layui-badge seal-abnormal">毙杀</span>
+                    </div>
+                </div>
+                <!-- 轮播容器  id="js-seal-table" -->
+                <div class="seal-wrap" id="js-seal-wrap">
+                    <div class="layui-carousel" id="js-seal-carousel" style="background: #fff;">
+                        <h3 class="center-block" id="h3" style="margin: 0px;background-color: #5cb85c"></h3>
+                        <div id="div1"></div>
+                    </div>
+                </div>
+                <!--</body>-->
+            </div>
+        </div>
+        <div v-show="!showList" class="panel panel-default">
+            <div class="panel-heading">{{title}}</div>
+            <div class="panel-body">
+                <form class="form-horizontal form-grop">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备唯一标识</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.devid"
+                                       placeholder="设备唯一标识"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">密码服务状态</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.encservicestate"
+                                       placeholder="密码服务状态"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">密钥失步监视</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.keyversion"
+                                       placeholder="密钥失步监视"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">密钥更新状态</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.keyupdatestate"
+                                       placeholder="密钥更新状态"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">隧道联通性</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.tunnelconnectivity"
+                                       placeholder="隧道联通性"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">IP地址是否变化</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.devipstate"
+                                       placeholder="IP地址是否变化"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">密钥算法使用率</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.algrescontion"
+                                       placeholder="密钥算法使用率"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">密钥资源利用率</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.keyrescondition"
+                                       placeholder="密钥资源利用率"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">设备状态</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.devstate" placeholder="设备状态"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">随机数发生器校验</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.rngCheck"
+                                       placeholder="随机数发生器校验状态"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">关键程序校验</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.kernelprogcheck"
+                                       placeholder="关键程序校验"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">毙杀通知</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.notice" placeholder="毙杀通知"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 control-label">最近修改时间</div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly="readonly"
+                                       v-model="devicedyninfonew.lastmodifytime"
+                                       placeholder="最近修改时间"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="button" class="btn btn-primary btn-block" @click="reload" value="返回"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            >
+        </div>
     </div>
 </div>
+
+</div>
+<!-- 主显内容区  -->
+
 </body>
+<script src="${request.contextPath}/statics/libs/jquery1.min.js"></script>
+<script src="${request.contextPath}/statics/libs/layui.js" type="text/javascript" charset="utf-8"></script>
+<script src="${request.contextPath}/statics/libs/jquery.ztree.core.min.js" type="text/javascript"
+        charset="utf-8"></script>
+<script src="${request.contextPath}/statics/libs/common.js"></script>
+<!--<script src="${request.contextPath}/statics/libs/index.js" type="text/javascript" charset="utf-8"></script>-->
+
+<script type="text/javascript">
+
+    $(function () {
+        $(window).resize(function () {
+            var nDocH = $(document).height(),//可视文档的高度
+                nContH = nDocH - 15;//主显内容区的高度
+            $("#js-cont").height(nContH + 10);//主显内容区的高度
+            $("#js-side").height(nContH + 10);//“侧边栏”的高度
+            $("#js-right-cont").height(nContH + 10);//“右侧内容区”的高度
+            $("#js-seal-wrap").height(nContH - 120);//轮播容器的高度
+//			alert((nContH-120-50-18*8)/8);
+            $(".seal-table td").height((nContH - 120 - 100 - 18 * 8) / 8);//轮播容器的高度
+            $(".seal-table p").height((nContH - 120 - 100 - 18 * 8) / 8);//轮播容器内p的高度
+
+        });
+        $(window).resize();
+        var setting = {
+            view: {
+                dblClickExpand: false,
+                showLine: true,
+                selectedMulti: false
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "pId",
+                    rootPId: "0"
+                }
+            },
+            callback: {
+                beforeClick: function (treeId, treeNode) {
+                    return true;
+                },
+                onClick: function (event, treeId, treeNode) {
+                    document.getElementById("h3").innerText = treeNode.name;
+                    depid = treeNode.id;
+                    appendTable(treeNode.id);//treeNode.id
+                },
+            }
+        };
+        $.get(baseURL + 'renren-admin/sys/dept/treelist', function (r) {
+            var data = r.map(function (item) {
+                return {
+                    id: item.deptId,
+                    pId: item.parentId,
+                    name: item.name,
+                    open: true,
+                }
+            });
+            $.fn.zTree.init($("#js-tree-structure"), setting, data); //加载数据
+        });
+        setInterval(function(){
+            appendTable(depid);
+        }, 5000);
+
+    });
+    var depid = null;
+
+    var vm = new Vue({
+        el: '#rrapp',
+        data: {
+            showList: true,
+            title: null,
+            devicedyninfonew: {},
+        },
+        methods: {
+            getInfo: function (devid) {
+                if (!isBlank(devid)) {
+                    //console.log(devid);
+                    $.get(baseURL + "renren-admin/device/devicedyninfonew/devinfo/" + devid, function (r) {
+                        vm.devicedyninfonew = r.devicedyninfonew;
+                        var a,b,c;
+                        var alg = vm.devicedyninfonew.algrescontion.toString();
+                        a = 'Sym_Alg:' + alg.substring(0, 2) + '%,';
+                        b = 'Asym_Alg:' + alg.substring(2, 4) + '%,';
+                        c = 'Hash_Alg:' + alg.substring(4) + '%';
+                        vm.devicedyninfonew.algrescontion = (a+b+c);
+                        var key = vm.devicedyninfonew.keyrescondition.toString();
+                        a = 'Sym_Alg:' + key.substring(0, 2) + '%,';
+                        b = 'Asym_Alg:' + key.substring(2, 4) + '%,';
+                        c = 'Hash_Alg:' + parseInt(key.substring(4)).toString() + '‰';
+                        vm.devicedyninfonew.keyrescondition = (a+b+c);
+                        if (vm.devicedyninfonew.devstate == 0) {
+                            vm.devicedyninfonew.devstate = "在线";
+                        }
+                        if (vm.devicedyninfonew.devstate == 1) {
+                            vm.devicedyninfonew.devstate = "离线";
+                        }
+                        if (vm.devicedyninfonew.devstate == 2) {
+                            vm.devicedyninfonew.devstate = "已毙杀";
+                        }
+                        if (vm.devicedyninfonew.keyversion == 0) {
+                            vm.devicedyninfonew.keyversion = "未失步";
+                        }
+                        if (vm.devicedyninfonew.keyversion == 1) {
+                            vm.devicedyninfonew.keyversion = "已失步";
+                        }
+                        if (vm.devicedyninfonew.encservicestate == 0) {
+                            vm.devicedyninfonew.encservicestate = "正常";
+                        }
+                        if (vm.devicedyninfonew.encservicestate == 1) {
+                            vm.devicedyninfonew.encservicestate = "异常";
+                        }
+                        if (vm.devicedyninfonew.keyupdatestate == 0) {
+                            vm.devicedyninfonew.keyupdatestate = "未到更新周期";
+                        }
+                        if (vm.devicedyninfonew.keyupdatestate == 1) {
+                            vm.devicedyninfonew.keyupdatestate = "待更新";
+                        }
+                        if (vm.devicedyninfonew.keyupdatestate == 2) {
+                            vm.devicedyninfonew.keyupdatestate = "正在更新";
+                        }
+                        if (vm.devicedyninfonew.keyupdatestate == 3) {
+                            vm.devicedyninfonew.keyupdatestate = "已更新";
+                        }
+                        if (vm.devicedyninfonew.keyupdatestate == 4) {
+                            vm.devicedyninfonew.keyupdatestate = "更新失败";
+                        }
+                        if (vm.devicedyninfonew.tunnelconnectivity == 0) {
+                            vm.devicedyninfonew.tunnelconnectivity = "已连通";
+                        }
+                        if (vm.devicedyninfonew.tunnelconnectivity == 1) {
+                            vm.devicedyninfonew.tunnelconnectivity = "未连通";
+                        }
+                        if (vm.devicedyninfonew.devipstate == 0) {
+                            vm.devicedyninfonew.devipstate = "未变更";
+                        }
+                        if (vm.devicedyninfonew.devipstate == 1) {
+                            vm.devicedyninfonew.devipstate = "已变更";
+                        }
+                        if (vm.devicedyninfonew.rngCheck == 0) {
+                            vm.devicedyninfonew.rngCheck = "正常";
+                        }
+                        if (vm.devicedyninfonew.rngCheck == 1) {
+                            vm.devicedyninfonew.rngCheck = "异常";
+                        }
+                        if (vm.devicedyninfonew.kernelprogcheck == 0) {
+                            vm.devicedyninfonew.kernelprogcheck = "正常";
+                        }
+                        if (vm.devicedyninfonew.kernelprogcheck == 1) {
+                            vm.devicedyninfonew.kernelprogcheck = "异常";
+                        }
+
+                        var timestamp = new Date(vm.devicedyninfonew.lastmodifytime);//直接用 new Date(时间戳) 格式转化获得当前时间
+                        vm.devicedyninfonew.lastmodifytime = timestamp.toLocaleDateString().replace(/\//g, "-") + " " + timestamp.toTimeString().substr(0, 8);
+                    });
+                    vm.showList = false;
+                    vm.title = "设备动态信息详情";
+                }
+            },
+            reload: function (event) {
+                vm.showList = true;
+            },
+        }
+    });
+
+    var jsonArray = [{"R": "1", "A": "001", "B": "002", "C": "003", "D": "004", "E": "005", "F": "006"},
+        {"R": "2", "A": "007", "B": "008", "C": "009", "D": "010", "E": "011", "F": "012"},
+        {"R": "3", "A": "013", "B": "014", "C": "015", "D": "016", "E": "017", "F": "018"},
+        {"R": "4", "A": "001", "B": "002", "C": "003", "D": "004", "E": "005", "F": "006"},];
+    var headArray = [];//表头数组
+    var currentdept = {};
+    function parseHead(oneRow) {
+        for (var i in oneRow) {
+            headArray[headArray.length] = i; //初始化headArray数组
+        }
+    }
+
+    function appendTable(sysNum) {
+        $.get(baseURL + 'renren-admin/sys/dept/infoCurrent', function (r) {
+            headArray = [];//置空表头数组
+            var div = document.getElementById("div1");
+            var mytable = document.getElementById("mytable");
+            if (!isBlank(mytable)) {
+                div.removeChild(mytable);
+            }
+            if (isBlank(sysNum)) {
+                document.getElementById("h3").innerText = r.dept.name;
+                sysNum = r.dept.deptId;
+            }
+            var url = baseURL + 'renren-admin/device/devicedyninfonew/tablelist';//tablelist
+            var dynInfo = [];//数据库中的设备最新状态信息
+            var jsonData = [];
+            url = url + '/' + sysNum;
+            $.ajax({
+                url: url,
+                cache: false,
+                dataType: "json",
+                data: {},
+                success: function (r) {
+                    dynInfo = r.devidList;
+                    var online = 0, outline = 0, killed = 0;
+                    for (var i = 0; i < dynInfo.length; i++) {
+                        if (dynInfo[i].devstate == 0) {
+                            online++;
+                        }
+                        if (dynInfo[i].devstate == 1) {
+                            outline++;
+                        }
+                        if (dynInfo[i].devstate == 2) {
+                            killed++;
+                        }
+                    }
+                    document.getElementById("seal-in-sum").innerText = online.toString();//在线设备数
+                    document.getElementById("seal-out-sum").innerText = outline.toString();//离线设备数
+                    document.getElementById("seal-abnormal-sum").innerText = killed.toString();//毙杀设备数
+
+                    var length = Math.ceil(dynInfo.length / 6);//dyInfo长度除6取上整
+
+                    for (var num = 0; num < length; num++) {
+                        //给table数据赋值
+                        var newItem = {};
+                        if ((num + 1) != length) {
+                            newItem = {
+                                R: num + 1,
+                                A: "设备" + [(num * 6) + 1],
+                                B: "设备" + [(num * 6) + 2],
+                                C: "设备" + [(num * 6) + 3],
+                                D: "设备" + [(num * 6) + 4],
+                                E: "设备" + [(num * 6) + 5],
+                                F: "设备" + [(num * 6) + 6],
+                            };
+                        }
+                        else {
+                            var chazhi = dynInfo.length - (num * 6);
+                            newItem = {
+                                R: num + 1,
+                                A: "空设备",
+                                B: "空设备",
+                                C: "空设备",
+                                D: "空设备",
+                                E: "空设备",
+                                F: "空设备",
+                            };
+                            for (var x = 0; x < chazhi; x++) {
+                                if (x == 0) {
+                                    newItem.A = "设备" + [(num * 6) + 1];
+                                    continue;
+                                }
+                                if (x == 1) {
+                                    newItem.B = "设备" + [(num * 6) + 2];
+                                    continue;
+                                }
+                                if (x == 2) {
+                                    newItem.C = "设备" + [(num * 6) + 3];
+                                    continue;
+                                }
+                                if (x == 3) {
+                                    newItem.D = "设备" + [(num * 6) + 4];
+                                    continue;
+                                }
+                                if (x == 4) {
+                                    newItem.E = "设备" + [(num * 6) + 5];
+                                    continue;
+                                }
+                                if (x == 5) {
+                                    newItem.F = "设备" + [(num * 6) + 6];
+                                    continue;
+                                }
+                            }
+                        }
+                        jsonData.push(newItem);
+                    }
+                    parseHead(jsonData[0]);
+                    var div = document.getElementById("div1");
+                    var table = document.createElement("table");
+                    table.id = "mytable";
+                    table.className = "layui-table";
+                    table.style = "height: 100%";
+                    var thead = document.createElement("tr");
+                    for (var count = 0; count < headArray.length; count++) {
+                        var th = document.createElement("th");
+                        th.innerHTML = headArray[count];
+                        if(count==0){
+                            th.style = "width:4%";
+                        }
+                        else {
+                            th.style = "width:16%";
+                        }
+                        thead.appendChild(th);
+                    }
+                    table.appendChild(thead);
+                    for (var tableRowNo = 0; tableRowNo < jsonData.length; tableRowNo++) {
+                        var tr = document.createElement("tr");
+                        for (var headCount = 0; headCount < headArray.length; headCount++) {
+                            var td = document.createElement("td");
+                            td.innerHTML = jsonData[tableRowNo][headArray[headCount]];
+                            if (headCount > 0) {
+                                var devNum = jsonData[tableRowNo][headArray[headCount]].toString().replace(/设备/g, "");
+                                //var totalNum = tableRowNo * 6 + headCount - 1;
+                                var a = document.createElement("a");
+                                var span = document.createElement("span");
+                                span.className = "tooltiptext";
+                                if (devNum == "空") {
+                                    continue;
+                                    // a.innerText = "无信息";
+                                    // a.className = "btn btn-block seal-empty";
+                                    // a.id = null;
+                                    // span.innerHTML = "空设备，无信息!";//悬停提示：空
+                                }
+                                else {
+                                    a.innerText = "详情";
+                                    a.id = dynInfo[parseInt(devNum) - 1].devid;//取设备唯一标识（[parseInt(devNum) - 1]为下标值）
+                                    span.innerHTML = a.id.toString();//悬停提示：设备唯一标识
+                                    //先判断状态，再加classname
+                                    if (dynInfo[parseInt(devNum) - 1].devstate == 0) {
+                                        a.className = "btn btn-block seal-in";
+                                    }
+                                    if (dynInfo[parseInt(devNum) - 1].devstate == 1) {
+                                        a.className = "btn btn-block seal-out";
+                                    }
+                                    if (dynInfo[parseInt(devNum) - 1].devstate == 2) {
+                                        a.className = "btn btn-block seal-abnormal";
+                                    }
+                                    a.addEventListener('click', function (e) {
+                                        e.preventDefault();  //取消默认事件，指a标签
+                                        var devid = e.target.id;
+                                        vm.getInfo(devid);
+                                    });
+                                }
+                                a.appendChild(span);
+                                var br = document.createElement("br");
+                                td.appendChild(br);
+                                td.appendChild(a);
+                            }
+                            tr.appendChild(td);
+                        }
+                        table.appendChild(tr);
+                    }
+                    div.appendChild(table);
+                }
+            });
+        });
+    }
+</script>
 </html>

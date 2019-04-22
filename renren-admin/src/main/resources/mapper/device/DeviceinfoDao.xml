@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DeviceinfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.DeviceinfoEntity" id="deviceinfoMap">
+        <result property="recnumber" column="RecNumber"/>
+        <result property="deviceid" column="DeviceID"/>
+        <result property="deviceversion" column="DeviceVersion"/>
+        <result property="standardversion" column="StandardVersion"/>
+        <result property="asymalgability0" column="AsymAlgAbility0"/>
+        <result property="asymalgability1" column="AsymAlgAbility1"/>
+        <result property="hashalgability" column="HashAlgAbility"/>
+        <result property="symalgability" column="SymAlgAbility"/>
+        <result property="deviceipv4" column="DeviceIPV4"/>
+        <result property="devicename" column="DeviceName"/>
+        <result property="deviceserial" column="DeviceSerial"/>
+        <result property="issuername" column="IssuerName"/>
+        <result property="devicetype" column="DeviceType"/>
+        <result property="devname" column="DevName"/>
+        <result property="devcertificate" column="DevCertificate"/>
+        <result property="adminorid" column="AdminorID"/>
+        <result property="adminorphone" column="AdminorPhone"/>
+        <result property="sysnumber" column="SysNumber"/>
+        <result property="devdepartment" column="DevDepartment"/>
+        <result property="buffersize" column="BufferSize"/>
+        <result property="regdate" column="RegDate"/>
+        <result property="agentnum" column="AgentNum"/>
+        <result property="lastmodifytime" column="LastModifyTime"/>
+    </resultMap>
+
+    <!--<select id="queryDevice" resultType="io.renren.modules.device.entity.DeviceEntity">-->
+       <!--select d.`dept_id`,d.parent_id,d.name,d.DeviceName,d.`DevName`,c.`DevID`,c.Devstate from (select * from sys_dept as a left  join `deviceinfo` as b on a.dept_id=b.sysnumber) as d  left join `devicedyninfo` as c on d.`DeviceID`=c.`DevID`    </select>-->
+</mapper>

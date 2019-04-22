@@ -23,16 +23,19 @@ import io.renren.common.utils.Constant;
 import io.renren.modules.sys.dao.SysDeptDao;
 import io.renren.modules.sys.entity.SysDeptEntity;
 import io.renren.modules.sys.service.SysDeptService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 @Service("sysDeptService")
 public class SysDeptServiceImpl extends ServiceImpl<SysDeptDao, SysDeptEntity> implements SysDeptService {
-	
+	@Autowired
+	private SysDeptService sysDeptService;
 	@Override
 	@DataFilter(subDept = true, user = false)
 	public List<SysDeptEntity> queryList(Map<String, Object> params){
@@ -41,26 +44,28 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptDao, SysDeptEntity> i
 			.addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER)));
 
 		for(SysDeptEntity sysDeptEntity : deptList){
-			SysDeptEntity parentDeptEntity =  this.selectById(sysDeptEntity.getParentId());
-			if(parentDeptEntity != null){
-				sysDeptEntity.setParentName(parentDeptEntity.getName());
+			Map<String, Object> map = new HashMap<>();
+			map.put("dept_id", sysDeptEntity.getParentId());
+			List<SysDeptEntity> list = sysDeptService.selectByMap(map);
+			if (list.size() == 1) {
+				sysDeptEntity.setParentName(list.get(0).getName());
 			}
 		}
 		return deptList;
 	}
 
 	@Override
-	public List<Long> queryDetpIdList(Long parentId) {
+	public List<String> queryDetpIdList(String parentId) {
 		return baseMapper.queryDetpIdList(parentId);
 	}
 
 	@Override
-	public List<Long> getSubDeptIdList(Long deptId){
+	public List<String> getSubDeptIdList(String deptId){
 		//部门及子部门ID列表
-		List<Long> deptIdList = new ArrayList<>();
+		List<String> deptIdList = new ArrayList<>();
 
 		//获取子部门ID
-		List<Long> subIdList = queryDetpIdList(deptId);
+		List<String> subIdList = queryDetpIdList(deptId);
 		getDeptTreeList(subIdList, deptIdList);
 
 		return deptIdList;
@@ -69,9 +74,9 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptDao, SysDeptEntity> i
 	/**
 	 * 递归
 	 */
-	private void getDeptTreeList(List<Long> subIdList, List<Long> deptIdList){
-		for(Long deptId : subIdList){
-			List<Long> list = queryDetpIdList(deptId);
+	private void getDeptTreeList(List<String> subIdList, List<String> deptIdList){
+		for(String deptId : subIdList){
+			List<String> list = queryDetpIdList(deptId);
 			if(list.size() > 0){
 				getDeptTreeList(list, deptIdList);
 			}
@@ -79,4 +84,16 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptDao, SysDeptEntity> i
 			deptIdList.add(deptId);
 		}
 	}
+
+
+	public  List<SysDeptEntity>  queryOwnSysNumberCenterid(){
+		return baseMapper.queryOwnSysNumberCenterid();
+	}
+
+
+	public  List<SysDeptEntity> findSysDeptList(){
+		return baseMapper.findSysDeptList();
+
+	}
+
 }

@@ -1,23 +1,11 @@
-var setting = {
-    data: {
-        simpleData: {
-            enable: true,
-            idKey: "deptId",
-            pIdKey: "parentId",
-            rootPId: -1
-        },
-        key: {
-            url:"nourl"
-        }
-    }
-};
-var ztree;
 
 var vm = new Vue({
     el:'#rrapp',
     data:{
         showList: true,
         title: null,
+        sysDept: {},
+        deptDomainInfos: {},
         dept:{
             parentName:null,
             parentId:0,
@@ -25,69 +13,35 @@ var vm = new Vue({
         }
     },
     methods: {
-        getDept: function(){
-            //加载部门树
-            $.get(baseURL + "sys/dept/select", function(r){
-                ztree = $.fn.zTree.init($("#deptTree"), setting, r.deptList);
-                var node = ztree.getNodeByParam("deptId", vm.dept.parentId);
-                ztree.selectNode(node);
-
-                vm.dept.parentName = node.name;
-            })
-        },
         add: function(){
             vm.showList = false;
-            vm.title = "新增";
-            vm.dept = {parentName:null,parentId:0,orderNum:0};
-            vm.getDept();
+            vm.title = "注册";
         },
         update: function () {
-            var deptId = getDeptId();
-            if(deptId == null){
+            var recnumber = getDeptId();
+            console.log("recnumber:");
+            console.log(recnumber);
+            if(recnumber == null){
                 return ;
             }
-
-            $.get(baseURL + "sys/dept/info/"+deptId, function(r){
+            $.get(baseURL + "sys/dept/info/"+recnumber, function(r){
                 vm.showList = false;
                 vm.title = "修改";
-                vm.dept = r.dept;
-
-                vm.getDept();
-            });
-        },
-        del: function () {
-            var deptId = getDeptId();
-            if(deptId == null){
-                return ;
-            }
-
-            confirm('确定要删除选中的记录？', function(){
-                $.ajax({
-                    type: "POST",
-                    url: baseURL + "sys/dept/delete",
-                    data: "deptId=" + deptId,
-                    success: function(r){
-                        if(r.code === 0){
-                            alert('操作成功', function(){
-                                vm.reload();
-                            });
-                        }else{
-                            alert(r.msg);
-                        }
-                    }
-                });
+                console.log("r.dept:");
+                console.log(r.dept);
+                vm.sysDept = r.dept;
             });
         },
         saveOrUpdate: function (event) {
-            var url = vm.dept.deptId == null ? "sys/dept/save" : "sys/dept/update";
+            var url = "sys/dept/update";
             $.ajax({
                 type: "POST",
                 url: baseURL + url,
                 contentType: "application/json",
-                data: JSON.stringify(vm.dept),
+                data: JSON.stringify(vm.sysDept),
                 success: function(r){
                     if(r.code === 0){
-                        alert('操作成功', function(){
+                        alert('修改成功', function(){
                             vm.reload();
                         });
                     }else{
@@ -96,29 +50,9 @@ var vm = new Vue({
                 }
             });
         },
-        deptTree: function(){
-            layer.open({
-                type: 1,
-                offset: '50px',
-                skin: 'layui-layer-molv',
-                title: "选择部门",
-                area: ['300px', '450px'],
-                shade: 0,
-                shadeClose: false,
-                content: jQuery("#deptLayer"),
-                btn: ['确定', '取消'],
-                btn1: function (index) {
-                    var node = ztree.getSelectedNodes();
-                    //选择上级部门
-                    vm.dept.parentId = node[0].deptId;
-                    vm.dept.parentName = node[0].name;
-
-                    layer.close(index);
-                }
-            });
-        },
         reload: function () {
             vm.showList = true;
+            vm.sysDept = {}; //置空
             Dept.table.refresh();
         }
     }
@@ -136,10 +70,22 @@ var Dept = {
 Dept.initColumn = function () {
     var columns = [
         {field: 'selectItem', radio: true},
-        {title: '部门ID', field: 'deptId', visible: false, align: 'center', valign: 'middle', width: '80px'},
-        {title: '部门名称', field: 'name', align: 'center', valign: 'middle', sortable: true, width: '180px'},
-        {title: '上级部门', field: 'parentName', align: 'center', valign: 'middle', sortable: true, width: '100px'},
-        {title: '排序号', field: 'orderNum', align: 'center', valign: 'middle', sortable: true, width: '100px'}]
+        // {title: '记录编号', field: 'recnumber', visible: false, align: 'center', valign: 'middle', width: '60px'},
+        {field: 'recnumber', width: '0px'},
+        //{title: '监管中心ID', field: 'deptId', align: 'center', valign: 'middle', width: '80px'},
+        {title: '监控中心名称', field: 'name', align: 'center', valign: 'middle', sortable: true, width: '100px'},
+        {title: '监控中心地址', field: 'ipAddr', align: 'center', valign: 'middle', sortable: true, width: '100px'},
+        {title: '监控中心唯一标识', field: 'centerId', align: 'center', valign: 'middle', sortable: true, width: '180px'},
+        {title: '上级监管中心', field: 'parentName', align: 'center', valign: 'middle', sortable: true, width: '100px'},
+        //{title: '管理代理端口', field: 'agentPort', align: 'center', valign: 'middle', sortable: true, width: '100px'},
+        {title: '是否本级', field: 'isCurrent', align: 'center', valign: 'middle', sortable: true, width: '60px', formatter: function(item, index){
+            if(item.isCurrent === 0){
+                return '<span class="label label-primary">否</span>';
+            }
+            if(item.isCurrent === 1){
+                return '<span class="label label-success">是</span>';
+            }
+        }}]
     return columns;
 };
 
@@ -150,7 +96,7 @@ function getDeptId () {
         alert("请选择一条记录");
         return null;
     } else {
-        return selected[0].id;
+        return selected[0].id;//取id域(recnumber)内的数据
     }
 }
 
@@ -159,13 +105,17 @@ $(function () {
     $.get(baseURL + "sys/dept/info", function(r){
         var colunms = Dept.initColumn();
         var table = new TreeTable(Dept.id, baseURL + "sys/dept/list", colunms);
-        table.setRootCodeValue(r.deptId);
-        table.setExpandColumn(2);
-        table.setIdField("deptId");
-        table.setCodeField("deptId");
-        table.setParentCodeField("parentId");
-        table.setExpandAll(false);
-        table.init();
-        Dept.table = table;
+        table.setRootCodeValue(r.deptId);//设置根节点
+        table.setExpandColumn(2);// 在哪一列上面显示展开按钮
+        table.setIdField("recnumber");//设置ID域
+        table.setCodeField("deptId");//
+        table.setParentCodeField("parentId");//
+        table.setExpandAll(true);// 是否全部展开
+        table.init();//初始化
+        Dept.table = table;//
+    });
+    //取数据库中Detpdomainnumdct表内的deptDomainnum和deptDomain两列的值存入vm.deptDomainInfos
+    $.get(baseURL + "device/detpdomainnumdct/list", function (r) {
+        vm.deptDomainInfos = r.page.list;
     });
 });

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.device.dao.DevicedyninfonewDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.device.entity.DevicedyninfonewEntity" id="devicedyninfonewMap">
+        <result property="recnumber" column="RecNumber"/>
+        <result property="devid" column="DevID"/>
+        <result property="encservicestate" column="EncServiceState"/>
+        <result property="keyversion" column="KeyVersion"/>
+        <result property="keyupdatestate" column="KeyUpdateState"/>
+        <result property="tunnelconnectivity" column="TunnelConnectivity"/>
+        <result property="devipstate" column="DevIPState"/>
+        <result property="algrescontion" column="AlgResContion"/>
+        <result property="keyrescondition" column="KeyResCondition"/>
+        <result property="devstate" column="DevState"/>
+        <result property="rngCheck" column="RNG_Check"/>
+        <result property="kernelprogcheck" column="KernelProgCheck"/>
+        <result property="notice" column="Notice"/>
+        <result property="lastmodifytime" column="LastModifyTime"/>
+        <result property="countnum" column="countNum"/>
+    </resultMap>
+
+    <select id="queryDeviceBydevid" resultType="io.renren.modules.device.entity.DevicedyninfonewEntity">
+       SELECT * FROM  devicedyninfonew
+    </select>
+
+
+</mapper>

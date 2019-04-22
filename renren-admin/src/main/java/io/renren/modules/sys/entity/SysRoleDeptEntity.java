@@ -43,7 +43,7 @@ public class SysRoleDeptEntity implements Serializable {
 	/**
 	 * 部门ID
 	 */
-	private Long deptId;
+	private String deptId;
 
 	/**
 	 * 设置：
@@ -81,7 +81,7 @@ public class SysRoleDeptEntity implements Serializable {
 	 * 设置：部门ID
 	 * @param deptId 部门ID
 	 */
-	public void setDeptId(Long deptId) {
+	public void setDeptId(String deptId) {
 		this.deptId = deptId;
 	}
 
@@ -89,7 +89,7 @@ public class SysRoleDeptEntity implements Serializable {
 	 * 获取：部门ID
 	 * @return Long
 	 */
-	public Long getDeptId() {
+	public String getDeptId() {
 		return deptId;
 	}
 	

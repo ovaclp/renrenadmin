@@ -33,7 +33,7 @@ public interface SysRoleDeptDao extends BaseMapper<SysRoleDeptEntity> {
 	/**
 	 * 根据角色ID，获取部门ID列表
 	 */
-	List<Long> queryDeptIdList(Long[] roleIds);
+	List<String> queryDeptIdList(Long[] roleIds);
 
 	/**
 	 * 根据角色ID数组，批量删除

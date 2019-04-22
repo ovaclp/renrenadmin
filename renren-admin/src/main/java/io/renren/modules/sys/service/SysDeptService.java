@@ -38,11 +38,16 @@ public interface SysDeptService extends IService<SysDeptEntity> {
 	 * 查询子部门ID列表
 	 * @param parentId  上级部门ID
 	 */
-	List<Long> queryDetpIdList(Long parentId);
+	List<String> queryDetpIdList(String parentId);
 
 	/**
 	 * 获取子部门ID，用于数据过滤
 	 */
-	List<Long> getSubDeptIdList(Long deptId);
+	List<String> getSubDeptIdList(String deptId);
 
+
+	List<SysDeptEntity>  queryOwnSysNumberCenterid();
+
+
+	List<SysDeptEntity> findSysDeptList();
 }

@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,8 +75,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 		);
 
 		for(SysUserEntity sysUserEntity : page.getRecords()){
-			SysDeptEntity sysDeptEntity = sysDeptService.selectById(sysUserEntity.getDeptId());
-			sysUserEntity.setDeptName(sysDeptEntity.getName());
+			Map<String, Object> map = new HashMap<>();
+			map.put("dept_id", sysUserEntity.getDeptId());
+			List<SysDeptEntity> list = sysDeptService.selectByMap(map);
+			if (list.size() == 1) {
+				sysUserEntity.setDeptName(list.get(0).getName());
+			}
 		}
 
 		return new PageUtils(page);

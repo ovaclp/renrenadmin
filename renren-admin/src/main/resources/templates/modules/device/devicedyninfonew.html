@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <#include "/header.html">
+    <style>
+        .form-grop {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+<div v-show="showList">
+    <div class="grid-btn">
+        <#if shiro.hasPermission("device:devicedyninfo:mes")>
+        <a class="btn btn-primary" @click="refresh"><i class="fa fa-plus"></i>&nbsp查询最新状态信息</a>
+        </#if>
+        <#if shiro.hasPermission("device:devicedyninfo:info")>
+        <a class="btn btn-primary" @click="check"><i class="fa fa-search-plus"></i>&nbsp;查看详情</a>
+        </#if>
+        <#if shiro.hasPermission("device:devicedyninfo:info")>
+        <a class="btn btn-primary" @click="outputInfo"><i class="fa fa-search-plus"></i>&nbsp;导出设备动态信息</a>
+        </#if>
+    </div>
+
+<!--<div class="grid-btn">
+
+    <#if shiro.hasPermission("device:devicedyninfonew:save")>
+    <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+    </#if>
+    <#if shiro.hasPermission("device:devicedyninfonew:update")>
+    <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+    </#if>
+    <#if shiro.hasPermission("device:devicedyninfonew:delete")>
+    <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+    </#if>
+</div>-->
+<table id="jqGrid"></table>
+<div id="jqGridPager"></div>
+</div>
+
+<div v-show="!showList" class="panel panel-default">
+    <div class="panel-heading">{{title}}</div>
+    <div class="panel-body">
+        <form class="form-horizontal form-grop">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">设备唯一标识</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly" v-model="devicedyninfonew.devid"
+                               placeholder="设备唯一标识"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">密码服务状态</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.encservicestate"
+                               placeholder="密码服务状态"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">密钥失步监视</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.keyversion"
+                               placeholder="密钥失步监视"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">密钥更新状态</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.keyupdatestate"
+                               placeholder="密钥更新状态"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">隧道联通性</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.tunnelconnectivity"
+                               placeholder="隧道联通性"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">IP地址是否变化</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.devipstate"
+                               placeholder="IP地址是否变化"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">密钥算法使用率</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.algrescontion"
+                               placeholder="密钥算法使用率"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">密钥资源利用率</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.keyrescondition"
+                               placeholder="密钥资源利用率"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">设备状态</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly" v-model="devicedyninfonew.devstate"
+                               placeholder="设备状态"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">随机数发生器校验</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly" v-model="devicedyninfonew.rngCheck"
+                               placeholder="随机数发生器校验状态"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">关键程序校验</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.kernelprogcheck"
+                               placeholder="关键程序校验"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">毙杀通知</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly" v-model="devicedyninfonew.notice"
+                               placeholder="毙杀通知"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">最近修改时间</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" readonly="readonly"
+                               v-model="devicedyninfonew.lastmodifytime"
+                               placeholder="最近修改时间"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="button" class="btn btn-primary btn-block" @click="reload" value="返回"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    >
+</div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/device/devicedyninfonew.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/device/FileSaver.js?_${.now?long}"></script>
+</body>
+</html>

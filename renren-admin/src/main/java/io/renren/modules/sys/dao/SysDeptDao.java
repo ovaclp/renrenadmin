@@ -18,6 +18,7 @@ package io.renren.modules.sys.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import io.renren.modules.sys.entity.SysDeptEntity;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -34,6 +35,15 @@ public interface SysDeptDao extends BaseMapper<SysDeptEntity> {
      * 查询子部门ID列表
      * @param parentId  上级部门ID
      */
-    List<Long> queryDetpIdList(Long parentId);
+    List<String> queryDetpIdList(String parentId);
 
+
+
+    //查询本级监管中心的id，centerID
+    @Select("SELECT dept_id,center_id,ip_addr  FROM sys_dept WHERE is_current=1 ")
+    List<SysDeptEntity>  queryOwnSysNumberCenterid();
+
+
+    @Select("SELECT * FROM sys_dept WHERE parent_id !='' ")
+    List<SysDeptEntity> findSysDeptList();
 }

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>密码设备注册表</title>
+		<#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+			<#if shiro.hasPermission("device:devicereginfo:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;注册</a>
+			</#if>
+			<#if shiro.hasPermission("device:devicereginfo:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;毙杀</a>
+			</#if>
+			<#if shiro.hasPermission("device:devicereginfo:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;注销</a>
+			</#if>
+            <#if shiro.hasPermission("device:devicereginfo:delete")>
+                <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;导出</a>
+            </#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">设备生产厂商名称</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.issuername" placeholder="设备生产厂商名称"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">设备型号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.devname" placeholder="设备型号"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">设备编号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.devserial" placeholder="设备编号"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">设备证书</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.devcertificate" placeholder="设备证书"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">设备注册管理员身份证编号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.adminorid" placeholder="设备注册管理员身份证编号"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">设备管理员联系电话</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.adminorphone" placeholder="设备管理员联系电话"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">监管中心编号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.sysnumber" placeholder="监管中心编号"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">设备使用单位编号</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="devicereginfo.devdepartment" placeholder="设备使用单位编号"/>
+                        </div>
+                    </div>
+							            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/device/devicereginfo.js?_${.now?long}"></script>
+</body>
+</html>
