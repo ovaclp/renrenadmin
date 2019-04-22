@@ -124,7 +124,7 @@ public class DeviceloginfoController {
      */
     @ApiOperation(value = "查询设备日志",notes = "查询某时间段内设备唯一标识日志记录列表")
     @ApiImplicitParam(name = "params",value = "唯一标识起始和结束时间")
-    @RequestMapping(value = "/loglist",method = RequestMethod.GET)
+    @RequestMapping(value = "/loglist")
     @RequiresPermissions("device:deviceloginfo:loglist")
     public R loglist(@RequestBody Map<String, String> params) {
         //System.out.println(params);

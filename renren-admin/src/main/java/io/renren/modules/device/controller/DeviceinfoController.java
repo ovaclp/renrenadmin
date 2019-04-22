@@ -149,7 +149,7 @@ public class DeviceinfoController {
      */
     @ApiOperation(value = "远程查询设备最新基本信息",notes = "跨级调用设备信息中心间接口")
     @ApiImplicitParam( name ="deviceid",value = "设备唯一标识")
-    @RequestMapping(value = "/queryonedev/{deviceid}",method = RequestMethod.GET)
+    @RequestMapping(value = "/queryonedev/{deviceid}")
     public R queryonedev(@PathVariable("deviceid") String deviceid) throws UnsupportedEncodingException {
 
         //从代理获取基本信息
@@ -188,7 +188,7 @@ public class DeviceinfoController {
 
     @ApiOperation(value = "查询设备最新基本信息",notes="根据设备唯一标识来查询设备最新基本信息")
     @ApiImplicitParam(name = "deviceinfo",value = "设备基本信息行记录")
-    @RequestMapping(value = "/mes",method = RequestMethod.GET)
+    @RequestMapping(value = "/mes")
     @RequiresPermissions("device:deviceinfo:mes")
     public R mes(@RequestBody DeviceinfoEntity deviceinfo) throws UnsupportedEncodingException {
 
@@ -283,7 +283,7 @@ public class DeviceinfoController {
      */
     @ApiOperation(value = "设备信息,中心信息同步",notes = "设备信息监控平台信息同步")
     @ApiImplicitParam(name="synchroDataFormWork",value = "同步的基本信息类型")
-    @RequestMapping(value = "/devlist",method = RequestMethod.GET)
+    @RequestMapping(value = "/devlist")
     public SynchroDataFormWork devlist(SynchroDataFormWork synchroDataFormWork) {
 
         SynchroDataFormWork synchroDataForm = new SynchroDataFormWork();

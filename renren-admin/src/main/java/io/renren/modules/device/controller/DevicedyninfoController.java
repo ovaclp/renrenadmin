@@ -95,7 +95,7 @@ public class DevicedyninfoController {
      * 列表
      */
     @ApiOperation(value = "设备动态信息列表",notes = "根据params参数来获取设备动态信息")
-    @RequestMapping(value = "/list",method = RequestMethod.GET)
+    @RequestMapping(value = "/list")
     @RequiresPermissions("device:devicedyninfo:list")
     public R list(@RequestParam Map<String, Object> params){
 
@@ -109,7 +109,7 @@ public class DevicedyninfoController {
      * 信息
      */
     @ApiOperation(value = "获取设备动态信息记录",notes = "根据行记录号recnumber获取设备动态信息")
-    @RequestMapping(value = "/info/{recnumber}",method = RequestMethod.GET)
+    @RequestMapping(value = "/info/{recnumber}")
     //@RequiresPermissions("device:devicedyninfo:info")
     public R info(@PathVariable("recnumber") Integer recnumber){
         DevicedyninfoEntity devicedyninfo = devicedyninfoService.selectById(recnumber);
@@ -160,7 +160,7 @@ public class DevicedyninfoController {
      */
     @ApiOperation(value = "远程查询设备最新状态信息",notes = "跨级调用设备信息中心间接口")
     @ApiImplicitParam(name = "deviceid",value = "设备唯一标识")
-    @RequestMapping(value ="/queryonedevdyn/{deviceid}",method = RequestMethod.GET)
+    @RequestMapping(value ="/queryonedevdyn/{deviceid}")
     public  R  queryonedevdyn(@PathVariable("deviceid") String  deviceid) throws UnsupportedEncodingException  {
 
         DevicedyninfoEntity devicedyninfoEntity=devicedyninfoService.queryallInfoById(deviceid);
@@ -206,7 +206,7 @@ public class DevicedyninfoController {
 
     @ApiOperation(value = "查询设备最新状态信息",notes = "根据设备唯一标识来查询设备最新状态信息")
     @ApiImplicitParam(name = "deviceinfo",value = "设备状态信息行记录")
-    @RequestMapping(value = "/mes",method = RequestMethod.GET)
+    @RequestMapping(value = "/mes")
     //@RequiresPermissions("device:devicedyninfo:mes")
     public R mes(@RequestBody DevicedyninfonewEntity deviceinfo){
 
@@ -354,7 +354,7 @@ public class DevicedyninfoController {
      */
     @ApiOperation(value = "毙杀设备接口",notes = "远程毙杀设备接口")
     @ApiImplicitParam(name = "deviceid",value = "设备唯一标识")
-    @RequestMapping(value ="/killReturn/{deviceid}",method = RequestMethod.GET)
+    @RequestMapping(value ="/killReturn/{deviceid}")
     public  R  killReturn(@PathVariable("deviceid") String  deviceid) throws UnsupportedEncodingException  {
 
         Map<String,Object>  maper=new HashMap<>();
@@ -470,7 +470,7 @@ public class DevicedyninfoController {
      */
     @ApiOperation(value = "毙杀设备",notes = "毙杀设备接口")
     @ApiImplicitParam(name = "devid",value = "设备唯一标识")
-    @RequestMapping(value = "/kill",method = RequestMethod.GET)
+    @RequestMapping(value = "/kill")
     @RequiresPermissions("device:devicedyninfo:kill")
     public R kill( @RequestBody String devid){
         //查看此设备有无状态信息
